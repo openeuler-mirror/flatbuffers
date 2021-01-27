@@ -1,0 +1,53 @@
+From 7e4124d6e6ccafb267f80f3e57e3780913d5cbe5 Mon Sep 17 00:00:00 2001
+From: Dmitry Volosnykh <dmitry.volosnykh@gmail.com>
+Date: Mon, 4 May 2020 23:23:41 +0300
+Subject: [PATCH] Handle git program or .git folder absence (#5878)
+
+Assume version is 0.0.0.0 in such cases.
+---
+ CMake/Version.cmake | 37 +++++++++++++++++++++++++++----------
+ 1 file changed, 27 insertions(+), 10 deletions(-)
+
+diff --git a/CMake/Version.cmake b/CMake/Version.cmake
+index db6613b840..0bed50f6e2 100644
+--- a/CMake/Version.cmake
++++ b/CMake/Version.cmake
+@@ -1,11 +1,28 @@
++set(VERSION_MAJOR 1)
++set(VERSION_MINOR 10)
++set(VERSION_PATCH 0)
++set(VERSION_COMMIT 0)
++
+ find_program(GIT git)
+-execute_process(
+-    COMMAND ${GIT} describe
+-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+-    OUTPUT_VARIABLE GIT_DESCRIBE_DIRTY
+-    OUTPUT_STRIP_TRAILING_WHITESPACE
+-)
+-string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${GIT_DESCRIBE_DIRTY}")
+-string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${GIT_DESCRIBE_DIRTY}")
+-string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" VERSION_PATCH "${GIT_DESCRIBE_DIRTY}")
+-string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+\\-([0-9]+).*" "\\1" VERSION_COMMIT "${GIT_DESCRIBE_DIRTY}")
++if(GIT)
++  execute_process(
++      COMMAND ${GIT} describe
++      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
++      OUTPUT_VARIABLE GIT_DESCRIBE_DIRTY
++      OUTPUT_STRIP_TRAILING_WHITESPACE
++      RESULT_VARIABLE GIT_DESCRIBE_RESULT
++  )
++
++  if(GIT_DESCRIBE_RESULT EQUAL 0)
++    string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${GIT_DESCRIBE_DIRTY}")
++    string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${GIT_DESCRIBE_DIRTY}")
++    string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" VERSION_PATCH "${GIT_DESCRIBE_DIRTY}")
++    string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+\\-([0-9]+).*" "\\1" VERSION_COMMIT "${GIT_DESCRIBE_DIRTY}")
++  else()
++    message(WARNING "git describe failed with exit code: ${GIT_DESCRIBE_RESULT}")
++  endif()
++else()
++  message(WARNING "git is not found")
++endif()
++
++message("Proceeding with version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.${VERSION_COMMIT}")
