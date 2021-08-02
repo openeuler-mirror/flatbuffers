@@ -1,0 +1,34 @@
+diff -Nur a/include/flatbuffers/base.h b/include/flatbuffers/base.h
+--- a/include/flatbuffers/base.h	2018-10-04 03:48:47.000000000 +0800
++++ b/include/flatbuffers/base.h	2021-08-02 19:48:18.468933100 +0800
+@@ -266,13 +266,30 @@
+   return EndianScalar(*reinterpret_cast<const T *>(p));
+ }
+ 
++#if defined(__GNUC__) && !defined(__clang__)
++  #define FLATBUFFERS_GCC (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
++#else
++  #define FLATBUFFERS_GCC 0
++#endif
++
++// See https://github.com/google/flatbuffers/issues/5950
++#if (FLATBUFFERS_GCC >= 100000) && (FLATBUFFERS_GCC < 110000)
++  #pragma GCC diagnostic push
++  #pragma GCC diagnostic ignored "-Wstringop-overflow"
++#endif
++
+ template<typename T> void WriteScalar(void *p, T t) {
+   *reinterpret_cast<T *>(p) = EndianScalar(t);
+ }
+ 
++#if (FLATBUFFERS_GCC >= 100000) && (FLATBUFFERS_GCC < 110000)
++  #pragma GCC diagnostic pop
++#endif
++
+ // Computes how many bytes you'd have to pad to be able to write an
+ // "scalar_size" scalar if the buffer had grown to "buf_size" (downwards in
+ // memory).
++
+ inline size_t PaddingBytes(size_t buf_size, size_t scalar_size) {
+   return ((~buf_size) + 1) & (scalar_size - 1);
+ }
