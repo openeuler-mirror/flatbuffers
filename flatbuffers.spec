@@ -5,14 +5,13 @@
 %endif
 Name:                flatbuffers
 Version:             1.10.0
-Release:             1
+Release:             2
 Summary:             Memory efficient serialization library
 License:             Apache-2.0
 URL:                 https://github.com/google/flatbuffers
 Source0:             https://github.com/google/flatbuffers/archive/v%{version}/%{name}-%{version}.tar.gz
 Source1:             flatc.1
 Source2:             flatbuffers.7
-Patch0:              0001-generate-gcc-pragmas-to-ignore-Wclass-memaccess.patch
 Patch1:              Handle-git-program-or-.git-folder-absence.patch
 BuildRequires:       gcc-c++ cmake >= 2.8.9
 Provides:            bundled(grpc)
@@ -70,5 +69,8 @@ make test
 %{_libdir}/cmake/flatbuffers/*.cmake
 
 %changelog
+* Mon Aug 23 2021 liyanan <liyanan32@huawei.com> - 1.10.0-2
+- Remove unwanted patch
+
 * Mon Jan 11 2021 yanan li <liyanan32@huawei.com> - 1.10.0-1
 - Package init
