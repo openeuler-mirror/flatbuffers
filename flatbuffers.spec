@@ -5,13 +5,15 @@
 %endif
 Name:                flatbuffers
 Version:             2.0.0
-Release:             1
+Release:             2
 Summary:             Memory efficient serialization library
 License:             Apache-2.0
 URL:                 https://github.com/google/flatbuffers
 Source0:             https://github.com/google/flatbuffers/archive/refs/tags/v%{version}.tar.gz
 Source1:             flatc.1
 Source2:             flatbuffers.7
+
+Patch0:              0001-Fix-compiler-warning-Wredundant-parens.patch
 
 BuildRequires:       gcc-c++ cmake >= 2.8.9
 Provides:            bundled(grpc)
@@ -77,4 +79,7 @@ make test
 - Fix complication failed due to gcc upgrade
 
 * Mon Jan 11 2021 yanan li <liyanan32@huawei.com> - 1.10.0-1
+- Package init
+
+* Wed Nov 11 2021 yefeng <yefeng24@huawei.com> - 2.0.0-2
 - Package init
