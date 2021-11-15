@@ -1,0 +1,35 @@
+From 766c1984b6e5e3e8ac1c153238e05b7f0624f7b5 Mon Sep 17 00:00:00 2001
+From: yefeng <yefeng24@huawei.com>
+Date: Mon, 15 Nov 2021 18:59:03 +0800
+Subject: [PATCH 3/3] output errors instead of stdout
+
+---
+ src/flatc_main.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/flatc_main.cpp b/src/flatc_main.cpp
+index b196666..30d0b47 100644
+--- a/src/flatc_main.cpp
++++ b/src/flatc_main.cpp
+@@ -23,15 +23,15 @@ static void Warn(const flatbuffers::FlatCompiler *flatc,
+                  const std::string &warn, bool show_exe_name) {
+   (void)flatc;
+   if (show_exe_name) { printf("%s: ", g_program_name); }
+-  printf("warning: %s\n", warn.c_str());
++  fprintf(stderr, "warning: %s\n", warn.c_str());
+ }
+ 
+ static void Error(const flatbuffers::FlatCompiler *flatc,
+                   const std::string &err, bool usage, bool show_exe_name) {
+   if (show_exe_name) { printf("%s: ", g_program_name); }
+-  printf("error: %s\n", err.c_str());
++  fprintf(stderr, "error: %s\n", err.c_str());
+   if (usage && flatc) {
+-    printf("%s", flatc->GetUsageString(g_program_name).c_str());
++    fprintf(stderr, "%s", flatc->GetUsageString(g_program_name).c_str());
+   }
+   exit(1);
+ }
+-- 
+2.17.1
+

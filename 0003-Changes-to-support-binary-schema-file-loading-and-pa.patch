@@ -1,0 +1,37 @@
+From fa1930955cb95a445f0a8547a9ef555e1b090860 Mon Sep 17 00:00:00 2001
+From: yefeng <yefeng24@huawei.com>
+Date: Mon, 15 Nov 2021 18:58:22 +0800
+Subject: [PATCH 2/3] Changes to support binary schema file loading and parsing
+
+---
+ src/flatc.cpp | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/flatc.cpp b/src/flatc.cpp
+index 221b886..a3043cc 100644
+--- a/src/flatc.cpp
++++ b/src/flatc.cpp
+@@ -453,16 +453,17 @@ int FlatCompiler::Compile(int argc, const char **argv) {
+           contents.length() != strlen(contents.c_str())) {
+         Error("input file appears to be binary: " + filename, true);
+       }
+-      if (is_schema) {
++      if (is_schema || is_binary_schema) {
+         // If we're processing multiple schemas, make sure to start each
+         // one from scratch. If it depends on previous schemas it must do
+         // so explicitly using an include.
+         parser.reset(new flatbuffers::Parser(opts));
+       }
++      // Try to parse the file contents (binary schema/flexbuffer/textual
++      // schema)
+       if (is_binary_schema) {
+         LoadBinarySchema(*parser.get(), filename, contents);
+-      }
+-      if (opts.use_flexbuffers) {
++      } else if (opts.use_flexbuffers) {
+         if (opts.lang_to_generate == IDLOptions::kJson) {
+           parser->flex_root_ = flexbuffers::GetRoot(
+               reinterpret_cast<const uint8_t *>(contents.c_str()),
+-- 
+2.17.1
+
