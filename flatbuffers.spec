@@ -5,7 +5,7 @@
 %endif
 Name:                flatbuffers
 Version:             2.0.0
-Release:             2
+Release:             3
 Summary:             Memory efficient serialization library
 License:             Apache-2.0
 URL:                 https://github.com/google/flatbuffers
@@ -14,6 +14,9 @@ Source1:             flatc.1
 Source2:             flatbuffers.7
 
 Patch0:              0001-Fix-compiler-warning-Wredundant-parens.patch
+Patch1:              0002-typo-fixes-in-comments.patch
+Patch2:              0003-Changes-to-support-binary-schema-file-loading-and-pa.patch
+Patch3:              0004-output-errors-instead-of-stdout.patch
 
 BuildRequires:       gcc-c++ cmake >= 2.8.9
 Provides:            bundled(grpc)
@@ -72,6 +75,12 @@ make test
 %{_libdir}/cmake/flatbuffers/*.cmake
 
 %changelog
+* Wed Nov 15 2021 yefeng <yefeng24@huawei.com> - 2.0.0-3
+- output errors instead of stdout, Typo fixes in comments and Changes to support binary schema file
+
+* Wed Nov 11 2021 yefeng <yefeng24@huawei.com> - 2.0.0-2
+- Fix compiler warning
+
 * Tue Aug 17 2021 yaoxin <yaoxin30@huawei.com> - 2.0.0-1
 - Upgrade 2.0.0 to fix CVE-2020-35864
 
@@ -79,7 +88,4 @@ make test
 - Fix complication failed due to gcc upgrade
 
 * Mon Jan 11 2021 yanan li <liyanan32@huawei.com> - 1.10.0-1
-- Package init
-
-* Wed Nov 11 2021 yefeng <yefeng24@huawei.com> - 2.0.0-2
 - Package init
