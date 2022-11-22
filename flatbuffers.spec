@@ -5,7 +5,7 @@
 %endif
 Name:                flatbuffers
 Version:             2.0.0
-Release:             4
+Release:             5
 Summary:             Memory efficient serialization library
 License:             Apache-2.0
 URL:                 https://github.com/google/flatbuffers
@@ -33,9 +33,16 @@ Requires:            %{name}%{?_isa} = %{version}-%{release}
 %description         devel
 %{summary}.
 
+%package -n          python3-flatbuffers
+Summary:             The FlatBuffers serialization format for Python
+BuildRequires:       python3-devel
+BuildRequires:       python3-setuptools
+%description -n      python3-flatbuffers
+Python runtime library for use with the Flatbuffers serialization format.
+
 %prep
 %autosetup -p1
-rm -rf js net php python docs go java js biicode {samples/,}android
+rm -rf js net php docs go java js biicode {samples/,}android
 chmod -x readme.md
 %cmake -DCMAKE_BUILD_TYPE=Release \
        -DFLATBUFFERS_BUILD_SHAREDLIB=ON \
@@ -46,11 +53,19 @@ chmod -x readme.md
 %build
 %make_build
 
+pushd python
+%py3_build
+popd
+
 %install
 %make_install
 mkdir -p %{buildroot}%{_mandir}/man{1,7}
 cp -p %SOURCE1 %{buildroot}%{_mandir}/man1/flatc.1
 cp -p %SOURCE2 %{buildroot}%{_mandir}/man7/flatbuffers.7
+
+pushd python
+%py3_install
+popd
 
 %check
 %if %{with tests}
@@ -75,7 +90,13 @@ make test
 %{_libdir}/pkgconfig/flatbuffers.pc
 %{_libdir}/cmake/flatbuffers/*.cmake
 
+%files -n python3-flatbuffers
+%{python3_sitelib}/
+
 %changelog
+* Tue Nov 22 2022 Bin Hu <hubin73@huawei.com> - 2.0.0-5
+- add python subpackage for tensorflow 2.10 build
+
 * Wed Nov 17 2021 yefeng <yefeng24@huawei.com> - 2.0.0-4
 - fix undefined behaviour
 
