@@ -1,0 +1,45 @@
+diff -u -r flatbuffers-2.0.0/include/flatbuffers/flatbuffers.h flatbuffers-2.0.0/include/flatbuffers/flatbuffers.h
+--- flatbuffers-2.0.0/include/flatbuffers/flatbuffers.h	2021-05-11 02:45:16.000000000 +0800
++++ flatbuffers-2.0.0/include/flatbuffers/flatbuffers.h	2023-06-20 15:46:20.000000000 +0800
+@@ -1932,6 +1932,9 @@
+ 
+   /// @cond FLATBUFFERS_INTERNAL
+   template<typename T> struct StructKeyComparator {
++    StructKeyComparator() = default;
++    StructKeyComparator(const StructKeyComparator &other) = default;
++
+     bool operator()(const T &a, const T &b) const {
+       return a.KeyCompareLessThan(&b);
+     }
+diff -u -r flatbuffers-2.0.0/src/idl_gen_rust.cpp flatbuffers-2.0.0/src/idl_gen_rust.cpp
+--- flatbuffers-2.0.0/src/idl_gen_rust.cpp	2021-05-11 02:45:16.000000000 +0800
++++ flatbuffers-2.0.0/src/idl_gen_rust.cpp	2023-06-20 15:45:16.000000000 +0800
+@@ -496,7 +496,6 @@
+     // example: f(A, D::E)          -> super::D::E
+     // does not include leaf object (typically a struct type).
+ 
+-    size_t i = 0;
+     std::stringstream stream;
+ 
+     auto s = src->components.begin();
+@@ -507,7 +506,6 @@
+       if (*s != *d) { break; }
+       ++s;
+       ++d;
+-      ++i;
+     }
+ 
+     for (; s != src->components.end(); ++s) { stream << "super::"; }
+
+diff -u -r flatbuffers-2.0.0/tests/test.cpp flatbuffers-2.0.0/tests/test.cpp
+--- flatbuffers-2.0.0/tests/test.cpp	2021-05-11 02:45:16.000000000 +0800
++++ flatbuffers-2.0.0/tests/test.cpp	2023-06-15 22:08:02.000000000 +0800
+@@ -604,7 +604,7 @@
+ void TriviallyCopyableTest() {
+   // clang-format off
+   #if __GNUG__ && __GNUC__ < 5
+-    TEST_EQ(__has_trivial_copy(Vec3), true);
++    TEST_EQ(__is_trivially_copyable(Vec3), true);
+   #else
+     #if __cplusplus >= 201103L
+       TEST_EQ(std::is_trivially_copyable<Vec3>::value, true);
