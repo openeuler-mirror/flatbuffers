@@ -18,6 +18,7 @@ Patch1:              0002-typo-fixes-in-comments.patch
 Patch2:              0003-Changes-to-support-binary-schema-file-loading-and-pa.patch
 Patch3:              0004-output-errors-instead-of-stdout.patch
 Patch4:              0005-fix-undefined-behaviour.patch
+Patch5:              0006-fix-clang.patch
 
 BuildRequires:       gcc-c++ cmake >= 2.8.9
 Provides:            bundled(grpc)
@@ -44,6 +45,10 @@ Python runtime library for use with the Flatbuffers serialization format.
 %autosetup -p1
 rm -rf js net php docs go java js biicode {samples/,}android
 chmod -x readme.md
+%if "%toolchain" == "clang"
+	export CC=clang
+	export CXX=clang++
+%endif
 %cmake -DCMAKE_BUILD_TYPE=Release \
        -DFLATBUFFERS_BUILD_SHAREDLIB=ON \
        -DFLATBUFFERS_BUILD_FLATLIB=OFF \
@@ -51,6 +56,10 @@ chmod -x readme.md
        -DFLATBUFFERS_BUILD_TESTS=%{?with_tests:ON}%{!?with_tests:OFF}
 
 %build
+%if "%toolchain" == "clang"
+	export CFLAGS="$CFLAGS -Wno-error=deprecated-copy -Wno-error=deprecated-copy"
+	export CXXFLAGS="$CXXFLAGS -Wno-error=deprecated-copy -Wno-error=deprecated-copy"
+%endif
 %make_build
 
 pushd python
